@@ -1,9 +1,57 @@
 #!/usr/bin/perl
 
+###############################################################################
+#
+#    uORF-detector.pl
+#   (C) Juan Caballero 2014
+#
+###############################################################################
+
+
+=head1 NAME
+
+uORF-detector.pl
+
+=head1 DESCRIPTION
+
+This script analyze a ADN sequence to detect upstream Open Reading Frames
+(uORFs). The first step is to detect the longest (and most feasible) ORF,
+then the script check for small ORFs in the 5' UTR sequence.
+
+=head1 USAGE
+
+perl uORF-detector.pl < FASTA_IN > OUTPUT_FILE
+
+=head1 AUTHOR
+
+Juan Caballero, UAQ @ 2014
+
+=head1 CONTACT
+
+jcaballero@uaq.mx
+
+=head1 LICENSE
+
+This is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
+This is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with
+code. If not, see <http://www.gnu.org/licenses/>.
+
+=cut
+
 use strict;
 use warnings;
 
-my $debug  = 0;
+my $debug   =  0; # debug flag
+my $minLen  =  5; # minimal uORF length
+my $maxLen  = 50; # maximal uORF length
+
+# This is the genetic code used, by default is the standard code, change it if
+# you need another genetic code.
 my %nuc2aa = (
 'TCA' => 'S', # Serine
 'TCC' => 'S', # Serine
@@ -178,7 +226,7 @@ sub checkUORF {
         while ($upframe =~ /M[^X]+?X/g) {
             my $orf = $&;
             my $len = length $orf;
-            $uorf .= ":$orf" if ($len >= 5 and $len <= 50);
+            $uorf .= ":$orf" if ($len >= $minLen and $len <= $maxLen);
         }
     }
     if ($uorf =~ /:/) {
